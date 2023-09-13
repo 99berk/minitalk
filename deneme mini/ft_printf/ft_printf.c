@@ -6,7 +6,7 @@
 /*   By: bakgun <bakgun@student.42kocaeli.com.tr>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/22 11:22:54 by bakgun            #+#    #+#             */
-/*   Updated: 2023/07/25 11:26:37 by bakgun           ###   ########.fr       */
+/*   Updated: 2023/09/13 14:39:02 by bakgun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ static int	ft_print_unum(unsigned int num)
 	}
 	if (ft_putchar((num % 10) + '0') == -1)
 		return (-1);
-	return (i + 1); 
+	return (i + 1);
 }
 
 static int	ft_format(char format, va_list args)
@@ -68,7 +68,7 @@ static int	ft_format(char format, va_list args)
 		return (ft_print_str(va_arg(args, char *)));
 	else if (format == 'p')
 		return (ft_print_ptr(va_arg(args, void *)));
-	else if (format == 'd') 
+	else if (format == 'd')
 		return (ft_print_num(va_arg(args, int)));
 	else if (format == 'i')
 		return (ft_print_num(va_arg(args, int)));

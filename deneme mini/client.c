@@ -6,13 +6,14 @@
 /*   By: bakgun <bakgun@student.42kocaeli.com.tr>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/10 13:40:55 by bakgun            #+#    #+#             */
-/*   Updated: 2023/09/11 14:23:20 by bakgun           ###   ########.fr       */
+/*   Updated: 2023/09/13 14:34:34 by bakgun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./ft_printf/ft_printf.h"
 #include <signal.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 int	ft_atoi(char *str)
 {
@@ -47,30 +48,40 @@ void	send_signal(int pid, int bit)
 		kill(pid, SIGUSR1);
 	else
 		kill(pid, SIGUSR2);
-	usleep(100);
+	usleep(400);
 }
 
 void	message_convert(int pid, char *msg)
 {
 	int	i;
 	int	bit;
+	int	bit2;
+	int	client_pid;
 
+	client_pid = getpid();
+	bit2 = 31;
+	while (bit2 >= 0)
+		send_signal(pid, (client_pid >> bit2--) & 1);
 	i = 0;
 	while (msg[i])
 	{
 		bit = 7;
 		while (bit >= 0)
-		{
-			send_signal(pid, (msg[i] >> bit) & 1);
-			bit--;
-		}
+			send_signal(pid, (msg[i] >> bit--) & 1);
 		i++;
 	}
 	bit = 7;
 	while (bit >= 0)
+		send_signal(pid, ('\n' >> bit--) & 1);
+	usleep(1000);
+}
+
+void	success(int sig)
+{
+	if (sig == SIGUSR1)
 	{
-		send_signal(pid, ('\n' >> bit) & 1);
-		bit--;
+		ft_printf("Message received by server.\n");
+		exit(0);
 	}
 }
 
@@ -85,8 +96,10 @@ int	main(int argc, char *argv[])
 		ft_printf("Usage: ./client <PID> <message>\n");
 		return (0);
 	}
+	signal(SIGUSR1, success);
 	pid = ft_atoi(argv[1]);
 	msg = argv[2];
 	message_convert(pid, msg);
+	pause();
 	return (0);
 }
