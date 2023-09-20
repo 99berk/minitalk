@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "signal.h": "c",
-        "_types.h": "c",
-        "_mcontext.h": "c",
-        "cdefs.h": "c",
-        "unistd.h": "c"
-    }
-}
