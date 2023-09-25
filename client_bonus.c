@@ -55,7 +55,13 @@ void	message_convert(int pid, char *msg)
 {
 	int	i;
 	int	bit;
+	int	bit2;
+	int	client_pid;
 
+	client_pid = getpid();
+	bit2 = 31;
+	while (bit2 >= 0)
+		send_signal(pid, (client_pid >> bit2--) & 1);
 	i = 0;
 	while (msg[i])
 	{
@@ -73,6 +79,15 @@ void	message_convert(int pid, char *msg)
 	usleep(1000);
 }
 
+void	success(int sig)
+{
+	if (sig == SIGUSR1)
+	{
+		ft_printf("Message received by server.\n");
+		exit(0);
+	}
+}
+
 int	main(int argc, char *argv[])
 {
 	int		pid;
@@ -84,8 +99,10 @@ int	main(int argc, char *argv[])
 		ft_printf("Usage: ./client <PID> <message>\n");
 		return (0);
 	}
+	signal(SIGUSR1, success);
 	pid = ft_atoi(argv[1]);
 	msg = argv[2];
 	message_convert(pid, msg);
+	pause();
 	return (0);
 }

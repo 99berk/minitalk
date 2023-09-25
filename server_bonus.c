@@ -14,20 +14,51 @@
 #include <signal.h>
 #include <unistd.h>
 
+int	get_client_pid(int i)
+{
+	static int	bit2 = 31;
+	static int	ascii_pid = 0;
+	int			pid_tmp;
+
+	pid_tmp = 0;
+	ascii_pid += (i << bit2);
+	if (bit2 == 0)
+	{
+		bit2 = 31;
+		pid_tmp = ascii_pid;
+		ascii_pid = 0;
+		return (pid_tmp);
+	}
+	else
+		bit2--;
+	return (pid_tmp);
+}
+
 void	bit_print(int i)
 {
 	static int	bit = 7;
 	static int	ascii = 0;
+	static int	client_pid = 0;
 
-	ascii += (i << bit);
-	if (bit == 0)
-	{
-		ft_printf("%c", ascii);
-		ascii = 0;
-		bit = 7;
-	}
+	if (client_pid == 0)
+		client_pid = get_client_pid(i);
 	else
-		bit--;
+	{
+		ascii += (i << bit);
+		if (bit == 0)
+		{
+			ft_printf("%c", ascii);
+			if (ascii == '\0')
+			{
+				kill(client_pid, SIGUSR1);
+				client_pid = 0;
+			}
+			ascii = 0;
+			bit = 7;
+		}
+		else
+			bit--;
+	}
 }
 
 void	sig_control(int sig)
